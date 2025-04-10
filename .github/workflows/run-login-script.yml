@@ -33,6 +33,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run login.py every minute
+        shell: bash
         run: |
           echo "Running for ${{ github.event.inputs.minutes }} minutes..."
           for ((i=1; i<=${{ github.event.inputs.minutes }}; i++)); do
