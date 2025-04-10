@@ -7,6 +7,10 @@ on:
         description: 'Run the script'
         required: true
         default: 'yes'
+      duration:
+        description: 'Duration in minutes to run the script'
+        required: true
+        default: '120'  # Default to 2 hours (120 minutes)
 
 jobs:
   run:
@@ -16,6 +20,8 @@ jobs:
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
       TWILIO_FROM_PHONE: ${{ secrets.TWILIO_FROM_PHONE }}
       TWILIO_TO_PHONE: ${{ secrets.TWILIO_TO_PHONE }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token to trigger the workflow
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -32,9 +38,23 @@ jobs:
 
       - name: Run Python script
         run: |
-          echo "Running login.py for 3 minutes..."
-          for i in {1..3}; do
-            echo "⏱️ Minute $i: Running login.py"
+          duration_minutes=${{ github.event.inputs.duration }}
+          end_time=$(( $(date +%s) + duration_minutes * 60 ))
+          echo "Running login.py for $duration_minutes minutes..."
+          
+          while [ $(date +%s) -lt $end_time ]; do
+            echo "⏱️ Running login.py"
             python login.py
-            sleep 60
+            sleep 60  # Wait for 1 minute before running again
           done
+
+      - name: Trigger workflow recursively
+        run: |
+          if [[ "${{ github.event.inputs.run_script }}" == "yes" ]]; then
+            echo "Triggering the workflow recursively..."
+            curl -X POST \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"ref": "main"}' \
+              https://api.github.com/repos/${{ github.repository }}/actions/workflows/run-python-script.yml/dispatches
+          fi
