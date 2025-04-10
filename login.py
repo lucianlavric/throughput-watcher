@@ -5,6 +5,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait 
 from selenium.common.exceptions import TimeoutException
 from twilio.rest import Client
+from dotenv import load_dotenv
+import os
+# Load environment variables from .env file
+load_dotenv()
+
+# Access variables
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 
 
 
@@ -53,8 +61,8 @@ if __name__ == "__main__":
 
         wait.until(lambda driver: get_numeric_value(driver) < 1000)
 
-        account_sid = 'PLACEHOLDER_TWILIO_ACCOUNT_SID'
-        auth_token = 'PLACEHOLDER_TWILIO_TOKEN'
+        account_sid = TWILIO_ACCOUNT_SID
+        auth_token = TWILIO_AUTH_TOKEN
         client = Client(account_sid, auth_token)
         message = client.messages.create(
             from_='+17855724926',
