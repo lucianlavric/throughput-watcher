@@ -48,7 +48,7 @@ link.click()
 
 # Extract numeric value
 def get_numeric_value(driver):
-    el = driver.find_element(By.CLASS_NAME, "data-property")
+    el = driver.find_element(By.XPATH, "(//div[@class='data-property'])[8]")    
     text = el.text.strip().replace(',','')
     print(f"Extracted text: '{text}'")  # Debugging line
     try:
