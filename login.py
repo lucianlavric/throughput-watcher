@@ -27,10 +27,10 @@ driver.get("https://control.dejero.com/users/sign_in")
 time.sleep(5)
 
 # Perform login
-username = driver.find_element_by_id("user_email")
+username = driver.find_element(By.ID, "user_email")
 username.send_keys("PLACEHOLDER_EMAIL")
 
-password = driver.find_element_by_id("user_password")
+password = driver.find_element(By.ID, "user_password")
 password.send_keys("PLACEHOLDER_PASSWORD")
 
 driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
