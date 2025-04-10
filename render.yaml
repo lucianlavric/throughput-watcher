@@ -1,0 +1,6 @@
+services:
+  - type: worker
+    name: throughput-worker
+    env: python
+    buildCommand: ""
+    startCommand: python login.py
