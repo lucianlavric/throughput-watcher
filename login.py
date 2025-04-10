@@ -13,6 +13,8 @@ load_dotenv()
 # Access variables
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_FROM_PHONE = os.getenv("TWILIO_FROM_PHONE")
+TWILIO_TO_PHONE = os.getenv("TWILIO_TO_PHONE")
 
 
 
@@ -65,9 +67,9 @@ if __name__ == "__main__":
         auth_token = TWILIO_AUTH_TOKEN
         client = Client(account_sid, auth_token)
         message = client.messages.create(
-            from_='+17855724926',
+            from_=TWILIO_FROM_PHONE,
             body='Your throughput has dropped below 1 mb!',
-            to='+15195006509'
+            to=TWILIO_TO_PHONE
         )
         print(message.sid)
 
