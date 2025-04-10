@@ -63,11 +63,11 @@ if __name__ == "__main__":
 
     if value < 1000:
         # Send Twilio message
-        client = Client(account_sid, auth_token)
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         message = client.messages.create(
-            from_=from_phone,
+            from_=TWILIO_FROM_PHONE,
             body='Your throughput has dropped below 1 mb!',
-            to=to_phone
+            to=TWILIO_TO_PHONE
         )
         print("🚨 Alert sent!", message.sid)
     else:
