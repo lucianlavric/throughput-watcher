@@ -1,6 +1,7 @@
 import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from twilio.rest import Client
 import time
 
@@ -32,7 +33,7 @@ username.send_keys("PLACEHOLDER_EMAIL")
 password = driver.find_element_by_id("user_password")
 password.send_keys("PLACEHOLDER_PASSWORD")
 
-driver.find_element_by_css_selector('button[type="submit"]').click()
+driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
 time.sleep(5)
 
 # Check if login was successful
@@ -42,12 +43,12 @@ else:
     print("Login failed")
 
 # Navigate to the desired page
-link = driver.find_element_by_link_text("5261644 - CPC Engo")
+link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
 link.click()
 
 # Extract numeric value
 def get_numeric_value(driver):
-    el = driver.find_element_by_class_name("data-property")
+    el = driver.find_element(By.CLASS_NAME, "data-property")
     text = el.text.strip().replace(',', '')  # Clean the value
     return int(text)
 
