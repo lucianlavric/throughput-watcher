@@ -2,6 +2,8 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from twilio.rest import Client
 import time
 
@@ -33,8 +35,9 @@ username.send_keys("PLACEHOLDER_EMAIL")
 password = driver.find_element(By.ID, "user_password")
 password.send_keys("PLACEHOLDER_PASSWORD")
 
-driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-time.sleep(5)
+WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[type="submit"]'))
+).click()
 
 # Check if login was successful
 if "Sign in" not in driver.page_source:
@@ -48,8 +51,13 @@ link.click()
 
 # Extract numeric value
 def get_numeric_value(driver):
-    el = driver.find_element(By.XPATH, "(//div[@class='data-property'])[8]")    
-    text = el.text.strip().replace(',','')
+    # Wait for the element to be present
+    el = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "(//div[@class='data-property'])[8]"))
+    )
+    
+    # Extract text, clean it, and convert to integer
+    text = el.text.strip().replace(',', '')
     print(f"Extracted text: '{text}'")  # Debugging line
 
     try:
