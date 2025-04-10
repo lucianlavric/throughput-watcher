@@ -32,6 +32,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install distutils
+        run: |
+          sudo apt-get install python3-distutils
+
       - name: Run login.py every minute
         run: |
           echo "Running for ${{ github.event.inputs.minutes }} minutes..."
