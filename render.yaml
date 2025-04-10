@@ -1,6 +1,16 @@
 services:
-  - type: worker
-    name: throughput-worker
+  - type: background_worker
+    name: my-python-worker
     env: python
-    buildCommand: ""
-    startCommand: python login.py
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python login.py"
+    envVars:
+      - key: TWILIO_ACCOUNT_SID
+        value: ${TWILIO_ACCOUNT_SID}
+      - key: TWILIO_AUTH_TOKEN
+        value: ${TWILIO_AUTH_TOKEN}
+      - key: TWILIO_FROM_PHONE
+        value: ${TWILIO_FROM_PHONE}
+      - key: TWILIO_TO_PHONE
+        value: ${TWILIO_TO_PHONE}
