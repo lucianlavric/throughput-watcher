@@ -49,10 +49,18 @@ link.click()
 # Extract numeric value
 def get_numeric_value(driver):
     el = driver.find_element(By.CLASS_NAME, "data-property")
-    text = el.text.strip().replace(',', '')  # Clean the value
-    return int(text)
+    print(f"Extracted text: '{el}'")  # Debugging line
+    try:
+        # Convert to integer
+        value = int(el)
+        print(f"Value parsed as: {value}")  # Print to check the parsed value
+        return value
+    except ValueError:
+        print(f"Error parsing value: '{el}'")
+        return 0  # Default in case of an error
 
 # Check if value is less than 1000
+time.sleep(10)  # Wait for the page to load
 if get_numeric_value(driver) < 1000:
     # Send an SMS if the numeric value is below 1000
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
