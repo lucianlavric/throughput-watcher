@@ -17,7 +17,6 @@ TWILIO_FROM_PHONE = os.getenv("TWILIO_FROM_PHONE")
 TWILIO_TO_PHONE = os.getenv("TWILIO_TO_PHONE")
 
 
-
 if __name__ == "__main__":
 
     options = uc.ChromeOptions()
@@ -50,32 +49,28 @@ if __name__ == "__main__":
     link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
     link.click()
 
-
-   
-
     def get_numeric_value(driver):
         el = driver.find_element(By.CLASS_NAME, "data-property")
-        text = el.text.strip().replace(',', '')  # remove commas if the number is like "1,234"
+        text = el.text.strip().replace(',', '')
         return int(text)
 
-    try:
-        wait = WebDriverWait(driver, timeout=7200, poll_frequency=1)  # Wait up to 2 hours, check every second
+    # Instead of a long wait, just do a short wait to ensure the element is loaded
+    short_wait = WebDriverWait(driver, timeout=10, poll_frequency=0.5)
+    short_wait.until(lambda d: d.find_element(By.CLASS_NAME, "data-property"))
 
-        wait.until(lambda driver: get_numeric_value(driver) < 1000)
+    value = get_numeric_value(driver)
+    print(f"Current value: {value}")
 
-        account_sid = TWILIO_ACCOUNT_SID
-        auth_token = TWILIO_AUTH_TOKEN
+    if value < 1000:
+        # Send Twilio message
         client = Client(account_sid, auth_token)
         message = client.messages.create(
-            from_=TWILIO_FROM_PHONE,
+            from_=from_phone,
             body='Your throughput has dropped below 1 mb!',
-            to=TWILIO_TO_PHONE
+            to=to_phone
         )
-        print(message.sid)
-
-        WebDriverWait(driver, 30).until(EC.text_to_be_present_in_element((By.ID,"ctl00_ContentPlaceHolder1_..."), "The text you want"))
-
-    except TimeoutException:
-        print("Timed out waiting for a drop")
+        print("🚨 Alert sent!", message.sid)
+    else:
+        print("Value is above threshold. No alert sent.")
 
 driver.quit()

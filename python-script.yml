@@ -1,11 +1,12 @@
-name: Run Python Script
+name: On-Demand Repeating Python Script
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Every hour
-  push:
-    branches:
-      - main  # Also runs on push to main
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "How many minutes should the script run?"
+        required: true
+        default: "120"  # default is 2 hours
 
 jobs:
   run-script:
@@ -24,12 +25,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run login script
-        run: python login.py
+      - name: Run login.py every minute
+        run: |
+          echo "Running for ${{ github.event.inputs.minutes }} minutes..."
+          for ((i=1; i<=${{ github.event.inputs.minutes }}; i++)); do
+            echo "⏱️ Minute $i: Running login.py"
+            python login.py
+            sleep 60
+          done
