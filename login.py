@@ -1,76 +1,66 @@
-from selenium.webdriver.common.by import By
-import time
-import undetected_chromedriver as uc
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait 
-from selenium.common.exceptions import TimeoutException
-from twilio.rest import Client
-from dotenv import load_dotenv
 import os
-# Load environment variables from .env file
-load_dotenv()
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from twilio.rest import Client
+import time
 
-# Access variables
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_FROM_PHONE = os.getenv("TWILIO_FROM_PHONE")
-TWILIO_TO_PHONE = os.getenv("TWILIO_TO_PHONE")
+# Read environment variables
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_FROM_PHONE = os.getenv('TWILIO_FROM_PHONE')
+TWILIO_TO_PHONE = os.getenv('TWILIO_TO_PHONE')
 
+# Set up headless Chrome options
+options = Options()
+options.add_argument('--headless')  # Run in headless mode
+options.add_argument('--no-sandbox')  # For environments like GitHub Actions
+options.add_argument('--disable-dev-shm-usage')  # To prevent issues with resource usage
 
-if __name__ == "__main__":
+# Initialize the driver
+driver = webdriver.Chrome(options=options)
 
-    options = uc.ChromeOptions()
+# Open the URL
+driver.get("https://control.dejero.com/users/sign_in")
 
-    options.headless = False
+# Wait for the page to load
+time.sleep(5)
 
-    driver = uc.Chrome(
-        use_subprocess = False,
-        options = options,
+# Perform login
+username = driver.find_element_by_id("user_email")
+username.send_keys("PLACEHOLDER_EMAIL")
+
+password = driver.find_element_by_id("user_password")
+password.send_keys("PLACEHOLDER_PASSWORD")
+
+driver.find_element_by_css_selector('button[type="submit"]').click()
+time.sleep(5)
+
+# Check if login was successful
+if "Sign in" not in driver.page_source:
+    print("Login successful")
+else:
+    print("Login failed")
+
+# Navigate to the desired page
+link = driver.find_element_by_link_text("5261644 - CPC Engo")
+link.click()
+
+# Extract numeric value
+def get_numeric_value(driver):
+    el = driver.find_element_by_class_name("data-property")
+    text = el.text.strip().replace(',', '')  # Clean the value
+    return int(text)
+
+# Check if value is less than 1000
+if get_numeric_value(driver) < 1000:
+    # Send an SMS if the numeric value is below 1000
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    message = client.messages.create(
+        from_=TWILIO_FROM_PHONE,
+        body='Your throughput has dropped below 1 mb!',
+        to=TWILIO_TO_PHONE
     )
+    print(message.sid)
 
-    driver.get("https://control.dejero.com/users/sign_in")
-
-    time.sleep(5)
-
-    username = driver.find_element(By.ID, "user_email")
-    username.send_keys("PLACEHOLDER_EMAIL")
-
-    password = driver.find_element(By.ID, "user_password")
-    password.send_keys("PLACEHOLDER_PASSWORD")
-
-    driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()    
-    time.sleep(5)
-    # Check if login was successful
-    if "Sign in" not in driver.page_source:
-        print("Login successful")
-    else:
-        print("Login failed")
-
-    link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
-    link.click()
-
-    def get_numeric_value(driver):
-        el = driver.find_element(By.CLASS_NAME, "data-property")
-        text = el.text.strip().replace(',', '')
-        return int(text)
-
-    # Instead of a long wait, just do a short wait to ensure the element is loaded
-    short_wait = WebDriverWait(driver, timeout=10, poll_frequency=0.5)
-    short_wait.until(lambda d: d.find_element(By.CLASS_NAME, "data-property"))
-
-    value = get_numeric_value(driver)
-    print(f"Current value: {value}")
-
-    if value < 1000:
-        # Send Twilio message
-        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-        message = client.messages.create(
-            from_=TWILIO_FROM_PHONE,
-            body='Your throughput has dropped below 1 mb!',
-            to=TWILIO_TO_PHONE
-        )
-        print("🚨 Alert sent!", message.sid)
-    else:
-        print("Value is above threshold. No alert sent.")
-
+# Close the browser
 driver.quit()
