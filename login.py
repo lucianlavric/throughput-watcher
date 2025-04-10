@@ -59,14 +59,14 @@ def get_numeric_value(driver):
         print(f"Error: Cannot convert '{text}' to an integer")
         return 0
 
-# Check if value is less than 1000
+# Check if value is less than 2000
 time.sleep(10)  # Wait for the page to load
-if get_numeric_value(driver) < 1000:
+if get_numeric_value(driver) < 2000:
     # Send an SMS if the numeric value is below 1000
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     message = client.messages.create(
         from_=TWILIO_FROM_PHONE,
-        body='Your throughput has dropped below 1 mb!',
+        body='Your throughput has dropped below 2 mb!',
         to=TWILIO_TO_PHONE
     )
     print(message.sid)
