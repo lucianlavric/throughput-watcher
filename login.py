@@ -58,6 +58,7 @@ except Exception as e:
         to=TWILIO_TO_PHONE
     )
     print(message.sid)
+    driver.quit()
 
 # Extract numeric value
 def get_numeric_value(driver):
