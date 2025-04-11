@@ -2,8 +2,11 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from twilio.rest import Client
 import time
+import random
 
 # Read environment variables
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
@@ -43,6 +46,7 @@ else:
     print("Login failed")
 
 # Navigate to the desired page
+driver.implicitly_wait(20)
 link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
 link.click()
 
