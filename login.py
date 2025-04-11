@@ -46,9 +46,18 @@ else:
     print("Login failed")
 
 # Navigate to the desired page
-driver.implicitly_wait(20)
-link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
-link.click()
+try:
+    driver.implicitly_wait(20)
+    link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
+    link.click()
+except Exception as e:
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    message = client.messages.create(
+        from_=TWILIO_FROM_PHONE,
+        body='The stream is down!',
+        to=TWILIO_TO_PHONE
+    )
+    print(message.sid)
 
 # Extract numeric value
 def get_numeric_value(driver):
