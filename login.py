@@ -2,11 +2,10 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 from twilio.rest import Client
 import time
-import random
 
 # Read environment variables
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
@@ -51,6 +50,7 @@ try:
     link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
     link.click()
 except Exception as e:
+    print(f"Elemtent disappeared")
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     message = client.messages.create(
         from_=TWILIO_FROM_PHONE,
@@ -59,20 +59,29 @@ except Exception as e:
     )
     print(message.sid)
     driver.quit()
+    exit()  
 
 # Extract numeric value
 def get_numeric_value(driver):
-    el = driver.find_element(By.XPATH, "(//div[@class='data-property'])[8]")    
-    text = el.text.strip().replace(',','')
-    print(f"Extracted text: '{text}'")  # Debugging line
-
     try:
-        value = int(text)
-        return value
-    except ValueError:
-        print(f"Error: Cannot convert '{text}' to an integer")
-        return 0
 
+        el = driver.find_element(By.XPATH, "(//div[@class='data-property'])[8]")    
+        text = el.text.strip().replace(',','')
+        print(f"Extracted text: '{text}'")  # Debugging line
+
+        return int(text)
+    except NoSuchElementException:
+        print(f"Elemtent disappeared")
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        message = client.messages.create(
+            from_=TWILIO_FROM_PHONE,
+            body='The stream is down!',
+            to=TWILIO_TO_PHONE
+        )
+        print(message.sid)
+        driver.quit()
+        exit()
+        
 # Check if value is less than 2000
 time.sleep(10)  # Wait for the page to load
 if get_numeric_value(driver) < 2000:
