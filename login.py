@@ -21,10 +21,6 @@ required_env_vars = {
     "GITHUB_TOKEN": os.getenv('GITHUB_TOKEN'),
 }
 
-# Validate that all required environment variables are set
-for var_name, var_value in required_env_vars.items():
-    if not var_value:
-        raise EnvironmentError(f"Error: The environment variable '{var_name}' is not set.")
 
 # Use the validated environment variables throughout the script
 TWILIO_ACCOUNT_SID = required_env_vars["TWILIO_ACCOUNT_SID"]
