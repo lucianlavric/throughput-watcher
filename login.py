@@ -64,10 +64,10 @@ try:
 
     # Perform login
     username = driver.find_element(By.ID, "user_email")
-    username.send_keys("USER_EMAIL")
+    username.send_keys(USER_EMAIL)
 
     password = driver.find_element(By.ID, "user_password")
-    password.send_keys("USER_PASSWORD")
+    password.send_keys(USER_PASSWORD)
 
     driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
     time.sleep(5)
