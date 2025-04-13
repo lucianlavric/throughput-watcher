@@ -46,11 +46,20 @@ jobs:
           
           while [ $(date +%s) -lt $end_time ]; do
             echo "⏱️ Running login.py"
-            python login.py
+            python login.py 
+            exit_code=$?
+            if [ $exit_code -eq 99 ]; then
+              echo "Stream is down, exiting..."
+              exit 0
+            elif [ $exit_code -ne 0 ]; then
+              echo "unexpected error occurred, exiting with failure..."
+              exit 1
+            fi
             sleep 60  # Wait for 1 minute before running again
           done
 
       - name: Trigger workflow recursively
+        if: success()
         run: |
           if [[ "${{ github.event.inputs.run_script }}" == "yes" ]]; then
             echo "Triggering the workflow recursively..."

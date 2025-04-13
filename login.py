@@ -1,4 +1,5 @@
 import os
+import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -43,7 +44,7 @@ def handle_element_disappearance():
     print(message.sid)
     cancel_workflow()
     driver.quit()
-    exit()
+    sys.exit(99)
 
 
 # Set up headless Chrome options
