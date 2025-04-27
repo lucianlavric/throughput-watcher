@@ -111,7 +111,7 @@ try:
     # Navigate to the desired page
     try:
         driver.implicitly_wait(20)
-        link = driver.find_element(By.LINK_TEXT, "5261644 - CPC Engo")
+        link = driver.find_element(By.LINK_TEXT, "5300294")
         link.click()
     except Exception as e:
         handle_element_disappearance()
